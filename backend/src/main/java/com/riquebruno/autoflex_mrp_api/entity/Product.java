@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 @Entity
@@ -24,8 +24,8 @@ public class Product {
     @Column(name = "value")
     private Double value;
     @Column(updatable = false, name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
 }
