@@ -1,6 +1,7 @@
 package com.riquebruno.autoflex_mrp_api.service;
 
 import com.riquebruno.autoflex_mrp_api.dto.ProductRequestDTO;
+import com.riquebruno.autoflex_mrp_api.dto.ProductResponseDTO;
 import com.riquebruno.autoflex_mrp_api.entity.Product;
 import com.riquebruno.autoflex_mrp_api.repository.ProductRepository;
 import org.springframework.stereotype.Service;
