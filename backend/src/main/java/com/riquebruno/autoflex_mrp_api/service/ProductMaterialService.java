@@ -44,7 +44,9 @@ public class ProductMaterialService {
 
         return new ProductMaterialResponseDTO(
                 savedEntity.getId(),
+                product.getId(),
                 product.getName(),
+                material.getId(),
                 material.getName(),
                 savedEntity.getQuantityNeeded()
         );
@@ -56,7 +58,9 @@ public class ProductMaterialService {
         return entities.stream()
                 .map(entity -> new ProductMaterialResponseDTO(
                         entity.getId(),
+                        entity.getProduct().getId(),
                         entity.getProduct().getName(),
+                        entity.getRawMaterial().getId(),
                         entity.getRawMaterial().getName(),
                         entity.getQuantityNeeded()
                 )).toList();
@@ -67,7 +71,9 @@ public class ProductMaterialService {
         return materials.stream()
                 .map(material -> new ProductMaterialResponseDTO(
                         material.getId(),
+                        material.getProduct().getId(),
                         material.getProduct().getName(),
+                        material.getRawMaterial().getId(),
                         material.getRawMaterial().getName(),
                         material.getQuantityNeeded()
                 )).toList();
@@ -83,7 +89,9 @@ public class ProductMaterialService {
 
         return new ProductMaterialResponseDTO(
                 savedEntity.getId(),
+                savedEntity.getProduct().getId(),
                 savedEntity.getProduct().getName(),
+                savedEntity.getRawMaterial().getId(),
                 savedEntity.getRawMaterial().getName(),
                 savedEntity.getQuantityNeeded()
         );
