@@ -1,4 +1,4 @@
-export default interface IMaterial {
+export default interface IRawMaterial {
   id: number;
   name: string;
   amount: number;
