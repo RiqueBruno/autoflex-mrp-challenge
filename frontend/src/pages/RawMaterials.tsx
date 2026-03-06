@@ -1,33 +1,29 @@
 import { useEffect, useState } from "react";
-import { api } from "../services/api";
 import type { IRawMaterialResponse } from "../types/IRawMaterial";
 import { RawMaterialTable } from "../components/tables/RawMaterialTable";
 import { VerticalChart } from "../components/chart/VerticalChart";
 import { Plus } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { fetchRawMaterials } from "../features/rawMaterial/rawMaterial-slice";
+import { useAppSelector } from "../hooks/useAppSelector";
 
 export const RawMaterials = () => {
-  const [rawMaterials, setRawMaterials] = useState<IRawMaterialResponse[]>([]);
-  const [fiveBestMaterials, setFiveBestMaterials] = useState<
-    IRawMaterialResponse[]
-  >([]);
+  const { rawMaterial } = useAppSelector((state) => state.rawMaterial);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchMaterials() {
       try {
-        const response = await api.rawMaterials.getAll();
-        setRawMaterials(response || []);
-        const sortedMaterials = [...(response || [])].sort(
-          (a, b) => b.amount - a.amount,
-        );
-        setFiveBestMaterials(sortedMaterials.slice(0, 5));
+        dispatch(fetchRawMaterials());
       } catch (error) {
         console.error("Error fetching raw materials: ", error);
       }
     }
 
     fetchMaterials();
-  }, []);
+  }, [dispatch]);
 
+  const sortedMaterials = [...rawMaterial].sort((a, b) => b.amount - a.amount);
   return (
     <div className="flex flex-col gap-8">
       <header>
@@ -44,7 +40,7 @@ export const RawMaterials = () => {
           <h3 className="text-sm font-semibold text-text-main mb-4 uppercase tracking-wider">
             Top 5 Raw Materials in Stock
           </h3>
-          <VerticalChart data={fiveBestMaterials} />
+          <VerticalChart data={sortedMaterials.slice(0, 5)} />
         </div>
       </section>
 
@@ -60,7 +56,7 @@ export const RawMaterials = () => {
             <Plus className="w-4 h-4" /> New Raw Material
           </button>
         </header>
-        <RawMaterialTable rawMaterials={rawMaterials} />
+        <RawMaterialTable rawMaterials={rawMaterial} />
       </section>
     </div>
   );
