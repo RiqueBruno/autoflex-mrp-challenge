@@ -1,14 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { VerticalChart } from "../components/chart/VerticalChart";
 import { Plus } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../hooks/useAppSelector";
+import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { ProductTable } from "../components/tables/ProductTable";
-import { fetchProducts } from "../features/produtc/product-slice";
+import {
+  createProduct,
+  fetchProducts,
+} from "../features/produtc/product-slice";
+import { FormProduct } from "../components/form/FormProduct";
+import type { IProductRequest } from "../types/IProduct";
+import { BaseModal } from "../components/ui/BaseModal";
+import Swal from "sweetalert2";
 
 export const Products = () => {
+  const [openForm, setOpenForm] = useState(false);
   const { product } = useAppSelector((state) => state.product);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function fetchMaterials() {
@@ -21,8 +28,29 @@ export const Products = () => {
 
     fetchMaterials();
   }, [dispatch]);
-  console.log(product);
 
+  const saveProductHandler = (data: IProductRequest) => {
+    try {
+      dispatch(createProduct(data))
+        .unwrap()
+        .then((result) => {
+          Swal.fire({
+            title: "Success!",
+            text: `Product "${result.name}" has been created successfully!`,
+            icon: "success",
+            confirmButtonColor: "#22c55e",
+          });
+        });
+      setOpenForm(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while saving the product. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -56,11 +84,19 @@ export const Products = () => {
           >
             Product List
           </h2>
-          <button className="bg-brand-darkBlue text-text-inverted px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <button
+            onClick={() => setOpenForm(true)}
+            className="bg-brand-darkBlue text-text-inverted px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer"
+          >
             <Plus className="w-4 h-4" /> New Product
           </button>
         </header>
         <ProductTable products={product} />
+        {openForm && (
+          <BaseModal title="Add New Product" onClose={() => setOpenForm(false)}>
+            <FormProduct onSubmit={saveProductHandler} onClose={setOpenForm} />
+          </BaseModal>
+        )}
       </section>
     </div>
   );
