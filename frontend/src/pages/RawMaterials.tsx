@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import type { IRawMaterialResponse } from "../types/IRawMaterial";
+import { useEffect } from "react";
 import { RawMaterialTable } from "../components/tables/RawMaterialTable";
 import { VerticalChart } from "../components/chart/VerticalChart";
 import { Plus } from "lucide-react";
