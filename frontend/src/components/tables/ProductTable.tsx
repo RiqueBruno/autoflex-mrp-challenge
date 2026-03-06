@@ -4,7 +4,7 @@ import { Edit, Trash2 } from "lucide-react";
 interface ProductTableProps {
   products: IProductResponse[];
   onEdit: (product: IProductResponse) => void;
-  onDelete?: (product: IProductResponse) => void;
+  onDelete: (product: IProductResponse) => void;
 }
 
 export const ProductTable = ({

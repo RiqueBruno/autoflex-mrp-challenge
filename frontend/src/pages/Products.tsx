@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { ProductTable } from "../components/tables/ProductTable";
 import {
   createProduct,
+  deleteProduct,
   fetchProducts,
   updateProduct,
 } from "../features/produtc/product-slice";
@@ -86,6 +87,28 @@ export const Products = () => {
     setOpenForm(true);
   };
 
+  const deleteProductHandler = (product: IProductResponse) => {
+    Swal.fire({
+      title: "Are you sure?",
+      html: `Do you really want to delete the product <strong>"${product.name}"</strong>? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteProduct(product.id));
+        Swal.fire({
+          title: "Deleted!",
+          text: `Product "${product.name}" has been deleted.`,
+          icon: "success",
+          confirmButtonColor: "#22c55e",
+        });
+      }
+    });
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -126,7 +149,11 @@ export const Products = () => {
             <Plus className="w-4 h-4" /> New Product
           </button>
         </header>
-        <ProductTable products={product} onEdit={editProductHandler} />
+        <ProductTable
+          products={product}
+          onEdit={editProductHandler}
+          onDelete={deleteProductHandler}
+        />
         {openForm && (
           <BaseModal title="Add New Product" onClose={() => setOpenForm(false)}>
             <FormProduct onSubmit={saveProductHandler} onClose={setOpenForm} />
