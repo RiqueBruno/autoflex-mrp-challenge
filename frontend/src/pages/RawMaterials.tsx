@@ -4,6 +4,7 @@ import { VerticalChart } from "../components/chart/VerticalChart";
 import { Plus } from "lucide-react";
 import {
   createRawMaterial,
+  deleteRawMaterial,
   fetchRawMaterials,
   updateRawMaterial,
 } from "../features/rawMaterial/rawMaterial-slice";
@@ -89,6 +90,27 @@ export const RawMaterials = () => {
     setOpenForm(true);
   };
 
+  const deleteMaterialHandler = (material: IRawMaterialResponse) => {
+    Swal.fire({
+      title: "Are you sure?",
+      html: `Do you really want to delete the raw material <strong>"${material.name}"</strong>? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteRawMaterial(material.id));
+        Swal.fire({
+          title: "Deleted!",
+          text: `Raw Material "${material.name}" has been deleted.`,
+          icon: "success",
+          confirmButtonColor: "#22c55e",
+        });
+      }
+    });
+  };
+
   const sortedMaterials = [...rawMaterial].sort((a, b) => b.amount - a.amount);
   return (
     <div className="flex flex-col gap-8">
@@ -132,6 +154,7 @@ export const RawMaterials = () => {
         <RawMaterialTable
           rawMaterials={rawMaterial}
           onEdit={editMaterialHandler}
+          onDelete={deleteMaterialHandler}
         />
         {openForm && (
           <BaseModal

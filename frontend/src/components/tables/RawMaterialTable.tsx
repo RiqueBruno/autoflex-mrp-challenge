@@ -4,7 +4,7 @@ import { Edit, Trash2 } from "lucide-react";
 interface RawMaterialTableProps {
   rawMaterials: IRawMaterialResponse[];
   onEdit: (material: IRawMaterialResponse) => void;
-  onDelete?: (material: IRawMaterialResponse) => void;
+  onDelete: (material: IRawMaterialResponse) => void;
 }
 
 export const RawMaterialTable = ({
@@ -44,6 +44,7 @@ export const RawMaterialTable = ({
                 <button
                   className="text-status-danger hover:text-red-800 transition-colors"
                   title="Delete"
+                  onClick={() => onDelete(material)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
