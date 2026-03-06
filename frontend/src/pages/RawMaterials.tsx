@@ -1,14 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { RawMaterialTable } from "../components/tables/RawMaterialTable";
 import { VerticalChart } from "../components/chart/VerticalChart";
 import { Plus } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { fetchRawMaterials } from "../features/rawMaterial/rawMaterial-slice";
-import { useAppSelector } from "../hooks/useAppSelector";
+import {
+  createRawMaterial,
+  fetchRawMaterials,
+} from "../features/rawMaterial/rawMaterial-slice";
+import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
+import Swal from "sweetalert2";
+import type { IRawMaterialRequest } from "../types/IRawMaterial";
+import { BaseModal } from "../components/ui/BaseModal";
+import { FormRawMaterial } from "../components/form/FormRawMaterial";
 
 export const RawMaterials = () => {
+  const [openForm, setOpenForm] = useState(false);
   const { rawMaterial } = useAppSelector((state) => state.rawMaterial);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function fetchMaterials() {
@@ -21,6 +28,29 @@ export const RawMaterials = () => {
 
     fetchMaterials();
   }, [dispatch]);
+
+  const saveMaterialHandler = (data: IRawMaterialRequest) => {
+    try {
+      dispatch(createRawMaterial(data))
+        .unwrap()
+        .then((result) => {
+          Swal.fire({
+            title: "Success!",
+            text: `Raw Material "${result.name}" has been created successfully!`,
+            icon: "success",
+            confirmButtonColor: "#22c55e",
+          });
+        });
+      setOpenForm(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while saving the raw material. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
 
   const sortedMaterials = [...rawMaterial].sort((a, b) => b.amount - a.amount);
   return (
@@ -55,11 +85,25 @@ export const RawMaterials = () => {
           >
             Raw Materials List
           </h2>
-          <button className="bg-brand-darkBlue text-text-inverted px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 transition-opacity">
+          <button
+            onClick={() => setOpenForm(true)}
+            className="bg-brand-darkBlue text-text-inverted px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 transition-opacity"
+          >
             <Plus className="w-4 h-4" /> New Raw Material
           </button>
         </header>
         <RawMaterialTable rawMaterials={rawMaterial} />
+        {openForm && (
+          <BaseModal
+            title="Add New Raw Material"
+            onClose={() => setOpenForm(false)}
+          >
+            <FormRawMaterial
+              onSubmit={saveMaterialHandler}
+              onClose={setOpenForm}
+            />
+          </BaseModal>
+        )}
       </section>
     </div>
   );
