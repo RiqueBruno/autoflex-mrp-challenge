@@ -6,15 +6,21 @@ import { ProductTable } from "../components/tables/ProductTable";
 import {
   createProduct,
   fetchProducts,
+  updateProduct,
 } from "../features/produtc/product-slice";
 import { FormProduct } from "../components/form/FormProduct";
-import type { IProductRequest } from "../types/IProduct";
+import type { IProductRequest, IProductResponse } from "../types/IProduct";
 import { BaseModal } from "../components/ui/BaseModal";
 import Swal from "sweetalert2";
 
 export const Products = () => {
   const [openForm, setOpenForm] = useState(false);
   const { product } = useAppSelector((state) => state.product);
+  const [actualProduct, setActualProduct] = useState<IProductResponse>({
+    id: 0,
+    name: "",
+    value: 0,
+  });
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -51,6 +57,35 @@ export const Products = () => {
       });
     }
   };
+
+  const updateProductHandler = (data: IProductRequest) => {
+    try {
+      dispatch(updateProduct({ id: actualProduct.id, data }))
+        .unwrap()
+        .then((result) => {
+          Swal.fire({
+            title: "Success!",
+            text: `Product "${result.name}" has been updated successfully!`,
+            icon: "success",
+            confirmButtonColor: "#22c55e",
+          });
+        });
+      setOpenForm(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while updating the product. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+
+  const editProductHandler = (product: IProductResponse) => {
+    setActualProduct(product);
+    setOpenForm(true);
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -91,10 +126,19 @@ export const Products = () => {
             <Plus className="w-4 h-4" /> New Product
           </button>
         </header>
-        <ProductTable products={product} />
+        <ProductTable products={product} onEdit={editProductHandler} />
         {openForm && (
           <BaseModal title="Add New Product" onClose={() => setOpenForm(false)}>
             <FormProduct onSubmit={saveProductHandler} onClose={setOpenForm} />
+          </BaseModal>
+        )}
+        {openForm && actualProduct.id !== 0 && (
+          <BaseModal title="Edit Product" onClose={() => setOpenForm(false)}>
+            <FormProduct
+              onSubmit={updateProductHandler}
+              initialData={actualProduct}
+              onClose={setOpenForm}
+            />
           </BaseModal>
         )}
       </section>
