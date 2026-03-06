@@ -39,14 +39,14 @@ export const FormProduct = (props: FormProps) => {
       </div>
       <div className="flex flex-col gap-2">
         <Button variant="primary" type="submit">
-          Salvar
+          Save
         </Button>
         <Button
           variant="secondary"
           type="button"
           onClick={() => props.onClose(false)}
         >
-          Cancelar
+          Cancel
         </Button>
       </div>
     </form>
