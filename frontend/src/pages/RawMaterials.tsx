@@ -39,7 +39,11 @@ export const RawMaterials = () => {
           <h3 className="text-sm font-semibold text-text-main mb-4 uppercase tracking-wider">
             Top 5 Raw Materials in Stock
           </h3>
-          <VerticalChart data={sortedMaterials.slice(0, 5)} />
+          <VerticalChart
+            data={sortedMaterials.slice(0, 5)}
+            dataP={[]}
+            type="rawMaterial"
+          />
         </div>
       </section>
 
