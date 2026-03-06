@@ -1,11 +1,17 @@
 import type { IRawMaterialResponse } from "../../types/IRawMaterial";
 import { Edit, Trash2 } from "lucide-react";
 
+interface RawMaterialTableProps {
+  rawMaterials: IRawMaterialResponse[];
+  onEdit: (material: IRawMaterialResponse) => void;
+  onDelete?: (material: IRawMaterialResponse) => void;
+}
+
 export const RawMaterialTable = ({
   rawMaterials,
-}: {
-  rawMaterials: IRawMaterialResponse[];
-}) => {
+  onEdit,
+  onDelete,
+}: RawMaterialTableProps) => {
   return (
     <div className="bg-surface-card border border-border-light rounded-lg shadow-sm overflow-x-auto">
       <table className="w-full text-left border-collapse whitespace-nowrap">
@@ -26,11 +32,12 @@ export const RawMaterialTable = ({
             >
               <td className="py-3 px-6 text-text-muted">#{material.id}</td>
               <td className="py-3 px-6 font-medium">{material.name}</td>
-              <td className="py-3 px-6">{material.amount} un.</td>
+              <td className="py-3 px-6">{material.amount} unit(s)</td>
               <td className="py-3 px-6 flex justify-center gap-3">
                 <button
                   className="text-brand-darkBlue hover:text-blue-800 transition-colors"
                   title="Edit"
+                  onClick={() => onEdit(material)}
                 >
                   <Edit className="w-4 h-4" />
                 </button>

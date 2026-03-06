@@ -5,15 +5,24 @@ import { Plus } from "lucide-react";
 import {
   createRawMaterial,
   fetchRawMaterials,
+  updateRawMaterial,
 } from "../features/rawMaterial/rawMaterial-slice";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import Swal from "sweetalert2";
-import type { IRawMaterialRequest } from "../types/IRawMaterial";
+import type {
+  IRawMaterialRequest,
+  IRawMaterialResponse,
+} from "../types/IRawMaterial";
 import { BaseModal } from "../components/ui/BaseModal";
 import { FormRawMaterial } from "../components/form/FormRawMaterial";
 
 export const RawMaterials = () => {
   const [openForm, setOpenForm] = useState(false);
+  const [actualMaterial, setActualMaterial] = useState<IRawMaterialResponse>({
+    id: 0,
+    name: "",
+    amount: 0,
+  });
   const { rawMaterial } = useAppSelector((state) => state.rawMaterial);
   const dispatch = useAppDispatch();
 
@@ -50,6 +59,34 @@ export const RawMaterials = () => {
         confirmButtonColor: "#ef4444",
       });
     }
+  };
+
+  const updateMaterialHandler = (data: IRawMaterialRequest) => {
+    try {
+      dispatch(updateRawMaterial({ id: actualMaterial.id, data }))
+        .unwrap()
+        .then((result) => {
+          Swal.fire({
+            title: "Success!",
+            text: `Raw Material "${result.name}" has been updated successfully!`,
+            icon: "success",
+            confirmButtonColor: "#22c55e",
+          });
+        });
+      setOpenForm(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while saving the raw material. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+
+  const editMaterialHandler = (material: IRawMaterialResponse) => {
+    setActualMaterial(material);
+    setOpenForm(true);
   };
 
   const sortedMaterials = [...rawMaterial].sort((a, b) => b.amount - a.amount);
@@ -92,7 +129,10 @@ export const RawMaterials = () => {
             <Plus className="w-4 h-4" /> New Raw Material
           </button>
         </header>
-        <RawMaterialTable rawMaterials={rawMaterial} />
+        <RawMaterialTable
+          rawMaterials={rawMaterial}
+          onEdit={editMaterialHandler}
+        />
         {openForm && (
           <BaseModal
             title="Add New Raw Material"
@@ -100,6 +140,18 @@ export const RawMaterials = () => {
           >
             <FormRawMaterial
               onSubmit={saveMaterialHandler}
+              onClose={setOpenForm}
+            />
+          </BaseModal>
+        )}
+        {openForm && actualMaterial.id !== 0 && (
+          <BaseModal
+            title="Edit Raw Material"
+            onClose={() => setOpenForm(false)}
+          >
+            <FormRawMaterial
+              onSubmit={updateMaterialHandler}
+              initialData={actualMaterial}
               onClose={setOpenForm}
             />
           </BaseModal>
