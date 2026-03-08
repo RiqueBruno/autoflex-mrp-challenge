@@ -19,7 +19,7 @@ const initialState: InitState = {
 
 // THUNKS
 // -------------------------------------------------------------------------
-export const fetchRawMaterials: any = createAsyncThunk(
+export const fetchRawMaterials = createAsyncThunk(
   "rawMaterial/fetchAll",
   async () => {
     return await api.rawMaterials.getAll();
@@ -58,9 +58,17 @@ export const rawMaterialSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      .addCase(fetchRawMaterials.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
       .addCase(fetchRawMaterials.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.rawMaterial = action.payload;
+      })
+      .addCase(fetchRawMaterials.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to fetch raw materials.";
       })
       .addCase(createRawMaterial.fulfilled, (state, action) => {
         state.rawMaterial.push(action.payload);

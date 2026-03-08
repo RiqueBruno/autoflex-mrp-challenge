@@ -16,12 +16,9 @@ const initialState: InitState = {
 
 // THUNKS
 // -------------------------------------------------------------------------
-export const fetchProducts: any = createAsyncThunk(
-  "product/fetchAll",
-  async () => {
-    return await api.products.getAll();
-  },
-);
+export const fetchProducts = createAsyncThunk("product/fetchAll", async () => {
+  return await api.products.getAll();
+});
 
 export const createProduct = createAsyncThunk(
   "product/create",
@@ -55,9 +52,17 @@ export const productSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      .addCase(fetchProducts.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.product = action.payload;
+      })
+      .addCase(fetchProducts.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to fetch products.";
       })
       .addCase(createProduct.fulfilled, (state, action) => {
         state.product.push(action.payload);
