@@ -13,9 +13,11 @@ import { FormProduct } from "../components/form/FormProduct";
 import type { IProductRequest, IProductResponse } from "../types/IProduct";
 import { BaseModal } from "../components/ui/BaseModal";
 import Swal from "sweetalert2";
+import { ProductRecipeModal } from "../components/views/ProductRecipeModal";
 
 export const Products = () => {
   const [openForm, setOpenForm] = useState(false);
+  const [recipeOpen, setRecipeOpen] = useState(false);
   const { product } = useAppSelector((state) => state.product);
   const [actualProduct, setActualProduct] = useState<IProductResponse>({
     id: 0,
@@ -109,6 +111,11 @@ export const Products = () => {
     });
   };
 
+  const recipeClickHandler = (product: IProductResponse) => {
+    setActualProduct(product);
+    setRecipeOpen(true);
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -153,6 +160,7 @@ export const Products = () => {
           products={product}
           onEdit={editProductHandler}
           onDelete={deleteProductHandler}
+          onRecipeClick={recipeClickHandler}
         />
         {openForm && (
           <BaseModal title="Add New Product" onClose={() => setOpenForm(false)}>
@@ -166,6 +174,14 @@ export const Products = () => {
               initialData={actualProduct}
               onClose={setOpenForm}
             />
+          </BaseModal>
+        )}
+        {recipeOpen && (
+          <BaseModal
+            title={`Recipe for ${actualProduct.name}`}
+            onClose={() => setRecipeOpen(false)}
+          >
+            <ProductRecipeModal initialData={actualProduct} />
           </BaseModal>
         )}
       </section>

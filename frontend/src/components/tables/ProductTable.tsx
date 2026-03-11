@@ -5,12 +5,14 @@ interface ProductTableProps {
   products: IProductResponse[];
   onEdit: (product: IProductResponse) => void;
   onDelete: (product: IProductResponse) => void;
+  onRecipeClick: (product: IProductResponse) => void;
 }
 
 export const ProductTable = ({
   products,
   onEdit,
   onDelete,
+  onRecipeClick,
 }: ProductTableProps) => {
   return (
     <div className="bg-surface-card border border-border-light rounded-lg shadow-sm overflow-x-auto">
@@ -31,7 +33,12 @@ export const ProductTable = ({
               className="hover:bg-surface-bg/50 transition-colors"
             >
               <td className="py-3 px-6 text-text-muted">#{product.id}</td>
-              <td className="py-3 px-6 font-medium">{product.name}</td>
+              <td
+                className="py-3 px-6 font-medium"
+                onClick={() => onRecipeClick(product)}
+              >
+                {product.name}
+              </td>
               <td className="py-3 px-6">$ {product.value.toFixed(2)}</td>
               <td className="py-3 px-6 flex justify-center gap-3">
                 <button
