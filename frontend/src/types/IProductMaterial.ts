@@ -3,7 +3,7 @@ export interface IProductMaterialResponse {
   productId: number;
   productName: string;
   materialId: number;
-  materialName: string;
+  rawMaterialName: string;
   quantityNeeded: number;
 }
 
