@@ -1,5 +1,6 @@
 import type { IProductResponse } from "../../types/IProduct";
 import { Edit, Trash2 } from "lucide-react";
+import type { IProductMaterialResponse } from "../../types/IProductMaterial";
 
 interface ProductTableProps {
   products: IProductResponse[];
@@ -34,7 +35,7 @@ export const ProductTable = ({
             >
               <td className="py-3 px-6 text-text-muted">#{product.id}</td>
               <td
-                className="py-3 px-6 font-medium"
+                className="py-3 px-6 font-medium cursor-pointer"
                 onClick={() => onRecipeClick(product)}
               >
                 {product.name}

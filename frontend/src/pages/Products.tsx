@@ -14,16 +14,22 @@ import type { IProductRequest, IProductResponse } from "../types/IProduct";
 import { BaseModal } from "../components/ui/BaseModal";
 import Swal from "sweetalert2";
 import { ProductRecipeModal } from "../components/views/ProductRecipeModal";
+import { fetchByProductId } from "../features/productMaterial/product-material-slice";
+import type { IProductMaterialResponse } from "../types/IProductMaterial";
 
 export const Products = () => {
   const [openForm, setOpenForm] = useState(false);
   const [recipeOpen, setRecipeOpen] = useState(false);
-  const { product } = useAppSelector((state) => state.product);
   const [actualProduct, setActualProduct] = useState<IProductResponse>({
     id: 0,
     name: "",
     value: 0,
   });
+  const [actutalRecipe, setActualRecipe] = useState<IProductMaterialResponse[]>(
+    [],
+  );
+  const { product } = useAppSelector((state) => state.product);
+  const { productMaterial } = useAppSelector((state) => state.productMaterial);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -112,6 +118,8 @@ export const Products = () => {
   };
 
   const recipeClickHandler = (product: IProductResponse) => {
+    dispatch(fetchByProductId(product.id));
+    setActualRecipe(productMaterial);
     setActualProduct(product);
     setRecipeOpen(true);
   };
@@ -181,7 +189,11 @@ export const Products = () => {
             title={`Recipe for ${actualProduct.name}`}
             onClose={() => setRecipeOpen(false)}
           >
-            <ProductRecipeModal initialData={actualProduct} />
+            <ProductRecipeModal
+              initialData={actualProduct}
+              recipe={productMaterial}
+              onClose={() => setRecipeOpen(false)}
+            />
           </BaseModal>
         )}
       </section>
