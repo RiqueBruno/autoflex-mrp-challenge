@@ -35,7 +35,18 @@ export const ProductTable = ({
             >
               <td className="py-3 px-6 text-text-muted">#{product.id}</td>
               <td
-                className="py-3 px-6 font-medium cursor-pointer"
+                className="relative py-3 px-6 font-medium cursor-pointer 
+                  hover:after:content-['View_Recipe'] 
+                  hover:after:absolute 
+                  hover:after:-top-4 
+                  hover:after:left-0 
+                  hover:after:bg-brand-darkBlue 
+                  hover:after:text-white 
+                  hover:after:text-xs 
+                  hover:after:px-2 
+                  hover:after:py-1 
+                  hover:after:rounded 
+                  hover:after:whitespace-nowrap"
                 onClick={() => onRecipeClick(product)}
               >
                 {product.name}
