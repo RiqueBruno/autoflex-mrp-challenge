@@ -1,6 +1,6 @@
 import type { IProductResponse } from "../../types/IProduct";
-import { Edit, Trash2 } from "lucide-react";
-import type { IProductMaterialResponse } from "../../types/IProductMaterial";
+import { Edit, Table, Trash2 } from "lucide-react";
+import { TableProductCard } from "../mobileCards/TableProductCard";
 
 interface ProductTableProps {
   products: IProductResponse[];
@@ -17,7 +17,7 @@ export const ProductTable = ({
 }: ProductTableProps) => {
   return (
     <div className="bg-surface-card border border-border-light rounded-lg shadow-sm overflow-x-auto">
-      <table className="w-full text-left border-collapse whitespace-nowrap">
+      <table className="w-full text-left border-collapse whitespace-nowrap hidden md:table">
         <thead className="bg-surface-bg border-b border-border-light text-text-main text-sm uppercase">
           <tr>
             <th className="py-3 px-6 font-semibold">ID</th>
@@ -35,18 +35,8 @@ export const ProductTable = ({
             >
               <td className="py-3 px-6 text-text-muted">#{product.id}</td>
               <td
-                className="relative py-3 px-6 font-medium cursor-pointer 
-                  hover:after:content-['View_Recipe'] 
-                  hover:after:absolute 
-                  hover:after:-top-4 
-                  hover:after:left-0 
-                  hover:after:bg-brand-darkBlue 
-                  hover:after:text-white 
-                  hover:after:text-xs 
-                  hover:after:px-2 
-                  hover:after:py-1 
-                  hover:after:rounded 
-                  hover:after:whitespace-nowrap"
+                className="relative py-3 px-6 font-medium cursor-pointer
+                  text-brand-darkBlue hover:underline"
                 onClick={() => onRecipeClick(product)}
               >
                 {product.name}
@@ -79,6 +69,25 @@ export const ProductTable = ({
           )}
         </tbody>
       </table>
+      <section className="p-4 md:hidden">
+        <h2 className="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+          <Table className="w-5 h-5" />
+          Products
+        </h2>
+        {products.map((product) => (
+          <div key={product.id} className="mb-4">
+            <TableProductCard
+              product={product}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onRecipeClick={onRecipeClick}
+            />
+          </div>
+        ))}
+        {products.length === 0 && (
+          <p className="py-8 text-center text-text-muted">No products found.</p>
+        )}
+      </section>
     </div>
   );
 };
