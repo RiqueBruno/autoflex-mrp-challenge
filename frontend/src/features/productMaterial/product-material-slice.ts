@@ -7,12 +7,14 @@ import { api } from "../../services/api";
 
 interface InitialState {
   productMaterial: IProductMaterialResponse[];
+  productMaterialList: IProductMaterialResponse[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
 const initialState: InitialState = {
   productMaterial: [],
+  productMaterialList: [],
   status: "idle",
   error: null,
 };
@@ -68,7 +70,7 @@ export const productMaterialSlice = createSlice({
       })
       .addCase(fetchProductsMaterials.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.productMaterial = action.payload;
+        state.productMaterialList = action.payload;
       })
       .addCase(fetchProductsMaterials.rejected, (state, action) => {
         state.status = "failed";
