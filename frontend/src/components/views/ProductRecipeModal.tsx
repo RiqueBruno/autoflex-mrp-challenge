@@ -2,6 +2,7 @@ import { Edit, Trash2, X } from "lucide-react";
 import type { IProductResponse } from "../../types/IProduct";
 import type { IProductMaterialResponse } from "../../types/IProductMaterial";
 import noImage from "../../assets/noProductImage.webp";
+import { TableProductCard } from "../mobileCards/ProductRecipeCard";
 
 interface ProductRecipeModalProps {
   initialData: IProductResponse;
@@ -59,7 +60,7 @@ export const ProductRecipeModal = ({
             [&::-webkit-scrollbar-thumb]:bg-gray-400
             [&::-webkit-scrollbar-thumb]:rounded-full"
         >
-          <table className="w-full text-left border-collapse whitespace-nowrap">
+          <table className="w-full hidden md:table text-left border-collapse whitespace-nowrap">
             <thead className="bg-surface-bg border-b border-border-light text-text-main text-sm uppercase sticky top-0 z-10">
               <tr>
                 <th className="py-2 px-3 font-semibold">Material</th>
@@ -112,6 +113,22 @@ export const ProductRecipeModal = ({
               )}
             </tbody>
           </table>
+          <section className="p-4 md:hidden">
+            {recipe.map((item) => (
+              <div key={item.id} className="mb-4">
+                <TableProductCard
+                  product={item}
+                  onEdit={() => {}}
+                  onDelete={() => {}}
+                />
+              </div>
+            ))}
+            {recipe.length === 0 && (
+              <p className="py-6 text-center text-text-muted">
+                No materials in this recipe.
+              </p>
+            )}
+          </section>
         </div>
       </div>
     </section>
