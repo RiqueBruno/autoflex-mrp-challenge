@@ -14,28 +14,49 @@ import type { IProductRequest, IProductResponse } from "../types/IProduct";
 import { BaseModal } from "../components/ui/BaseModal";
 import Swal from "sweetalert2";
 import { ProductRecipeModal } from "../components/views/ProductRecipeModal";
-import { fetchByProductId } from "../features/productMaterial/product-material-slice";
+import {
+  createProductMaterial,
+  deleteProductMaterial,
+  fetchByProductId,
+  fetchProductsMaterials,
+  updateProductMaterial,
+} from "../features/productMaterial/product-material-slice";
 import type { IProductMaterialResponse } from "../types/IProductMaterial";
+import { FormMaterialRecipe } from "../components/form/FormMaterialRecipe";
+import { FormCreateMaterialRecipe } from "../components/form/FormCreateMaterialRecipe";
 
 export const Products = () => {
   const [openForm, setOpenForm] = useState(false);
   const [recipeOpen, setRecipeOpen] = useState(false);
+  const [recipeEditFormOpen, setRecipeEditFormOpen] = useState(false);
   const [actualProduct, setActualProduct] = useState<IProductResponse>({
     id: 0,
     name: "",
     value: 0,
   });
+  const [actualRecipeItem, setActualRecipeItem] =
+    useState<IProductMaterialResponse>({
+      id: 0,
+      productId: 0,
+      rawMaterialId: 0,
+      quantityNeeded: 0,
+      rawMaterialName: "",
+      productName: "",
+    });
   const [actutalRecipe, setActualRecipe] = useState<IProductMaterialResponse[]>(
     [],
   );
   const { product } = useAppSelector((state) => state.product);
-  const { productMaterial } = useAppSelector((state) => state.productMaterial);
+  const { productMaterial, productMaterialList } = useAppSelector(
+    (state) => state.productMaterial,
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     async function fetchMaterials() {
       try {
-        dispatch(fetchProducts());
+        await dispatch(fetchProducts());
+        await dispatch(fetchProductsMaterials());
       } catch (error) {
         console.error("Error fetching products: ", error);
       }
@@ -44,9 +65,9 @@ export const Products = () => {
     fetchMaterials();
   }, [dispatch]);
 
-  const saveProductHandler = (data: IProductRequest) => {
+  const saveProductHandler = async (data: IProductRequest) => {
     try {
-      dispatch(createProduct(data))
+      await dispatch(createProduct(data))
         .unwrap()
         .then((result) => {
           Swal.fire({
@@ -67,9 +88,9 @@ export const Products = () => {
     }
   };
 
-  const updateProductHandler = (data: IProductRequest) => {
+  const updateProductHandler = async (data: IProductRequest) => {
     try {
-      dispatch(updateProduct({ id: actualProduct.id, data }))
+      await dispatch(updateProduct({ id: actualProduct.id, data }))
         .unwrap()
         .then((result) => {
           Swal.fire({
@@ -117,6 +138,87 @@ export const Products = () => {
     });
   };
 
+  const saveRecipeHandler = async (item: IProductMaterialResponse) => {
+    try {
+      const data = {
+        productId: item.productId,
+        rawMaterialId: item.rawMaterialId,
+        quantityNeeded: item.quantityNeeded,
+      };
+
+      await dispatch(createProductMaterial(data))
+        .unwrap()
+        .then((result) => {
+          Swal.fire({
+            title: "Success!",
+            text: `Item to "${result.productName}" recipe has been create successfully!`,
+            icon: "success",
+            confirmButtonColor: "#22c55e",
+          });
+        });
+      setRecipeEditFormOpen(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while create the item. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+
+  const updateRecipeHandler = async (data: IProductMaterialResponse) => {
+    try {
+      const newData = {
+        productId: data.productId,
+        rawMaterialId: data.rawMaterialId,
+        quantityNeeded: data.quantityNeeded,
+      };
+      await dispatch(updateProductMaterial({ id: data.id, data: newData }));
+      Swal.fire({
+        title: "Success!",
+        text: `Item "${data.rawMaterialName}" has been updated successfully!`,
+        icon: "success",
+        confirmButtonColor: "#22c55e",
+      });
+      setRecipeEditFormOpen(false);
+    } catch (error) {
+      Swal.fire({
+        title: "Oops!",
+        text: "Something went wrong while updating the item. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#ef4444",
+      });
+    }
+  };
+
+  const handleEditRecipeClick = (item: IProductMaterialResponse) => {
+    setActualRecipeItem(item);
+    setRecipeEditFormOpen(true);
+  };
+
+  const deleteRecipeHandler = (item: IProductMaterialResponse) => {
+    Swal.fire({
+      title: "Are you sure?",
+      html: `Do you really want to delete the item <strong>"${item.rawMaterialName}"</strong>? This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        dispatch(deleteProductMaterial(item.id));
+        Swal.fire({
+          title: "Deleted!",
+          text: `Item "${item.rawMaterialName}" has been deleted.`,
+          icon: "success",
+          confirmButtonColor: "#22c55e",
+        });
+      }
+    });
+  };
+
   const recipeClickHandler = (product: IProductResponse) => {
     dispatch(fetchByProductId(product.id));
     setActualRecipe(productMaterial);
@@ -124,7 +226,21 @@ export const Products = () => {
     setRecipeOpen(true);
   };
 
+  const handleOpenCreateRecipeClick = () => {
+    setActualRecipeItem({
+      id: 0,
+      productId: actualProduct.id,
+      rawMaterialId: 0,
+      quantityNeeded: 0,
+      rawMaterialName: "",
+      productName: "",
+    });
+    setRecipeEditFormOpen(true);
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
+  console.log(actualRecipeItem);
+
   return (
     <div className="flex flex-col gap-8">
       <header>
@@ -192,7 +308,37 @@ export const Products = () => {
             <ProductRecipeModal
               initialData={actualProduct}
               recipe={productMaterial}
+              onEdit={handleEditRecipeClick}
+              onDelete={deleteRecipeHandler}
               onClose={() => setRecipeOpen(false)}
+              addRecipe={handleOpenCreateRecipeClick}
+            />
+          </BaseModal>
+        )}
+
+        {recipeEditFormOpen && actualRecipeItem.id !== 0 && (
+          <BaseModal
+            title="Edit Recipe Item"
+            onClose={() => setRecipeEditFormOpen(false)}
+          >
+            <FormMaterialRecipe
+              onSubmit={updateRecipeHandler}
+              initialData={actualRecipeItem}
+              onClose={() => setRecipeEditFormOpen(false)}
+            />
+          </BaseModal>
+        )}
+
+        {recipeEditFormOpen && actualRecipeItem.id === 0 && (
+          <BaseModal
+            title="Create new Recipe Item"
+            onClose={() => setRecipeEditFormOpen(false)}
+          >
+            <FormCreateMaterialRecipe
+              rawMaterialsList={productMaterialList}
+              onSubmit={saveRecipeHandler}
+              initialData={actualRecipeItem}
+              onClose={() => setRecipeEditFormOpen(false)}
             />
           </BaseModal>
         )}

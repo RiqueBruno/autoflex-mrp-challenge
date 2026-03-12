@@ -7,6 +7,9 @@ import { TableProductCard } from "../mobileCards/ProductRecipeCard";
 interface ProductRecipeModalProps {
   initialData: IProductResponse;
   recipe: IProductMaterialResponse[];
+  onEdit: (item: IProductMaterialResponse) => void;
+  onDelete: (item: IProductMaterialResponse) => void;
+  addRecipe: () => void;
   onClose: () => void;
 }
 
@@ -14,6 +17,9 @@ export const ProductRecipeModal = ({
   initialData,
   recipe,
   onClose,
+  onEdit,
+  addRecipe,
+  onDelete,
 }: ProductRecipeModalProps) => {
   return (
     <section className="relative flex flex-col md:flex-row gap-6 w-full max-w-4xl max-h-[90vh] bg-surface-card border border-border-light rounded-lg shadow-sm p-6 overflow-y-auto md:overflow-hidden">
@@ -48,7 +54,10 @@ export const ProductRecipeModal = ({
       <div className="flex flex-col flex-1 w-full max-h-60 md:max-h-96 pt-4 overflow-hidden">
         <div className="flex justify-between items-center mb-3 shrink-0">
           <h4 className="font-semibold text-lg text-text-main">Recipe</h4>
-          <button className="bg-brand-darkBlue text-white px-3 py-1.5 rounded text-sm hover:bg-blue-800 transition-colors cursor-pointer">
+          <button
+            onClick={addRecipe}
+            className="bg-brand-darkBlue text-white px-3 py-1.5 rounded text-sm hover:bg-blue-800 transition-colors cursor-pointer"
+          >
             Add Recipe Item
           </button>
         </div>
@@ -88,14 +97,14 @@ export const ProductRecipeModal = ({
                       <button
                         className="text-brand-darkBlue hover:text-blue-800 transition-colors cursor-pointer"
                         title="Edit"
-                        onClick={() => {}}
+                        onClick={() => onEdit(item)}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button
                         className="text-status-danger hover:text-red-800 transition-colors cursor-pointer"
                         title="Delete"
-                        onClick={() => {}}
+                        onClick={() => onDelete(item)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -118,8 +127,8 @@ export const ProductRecipeModal = ({
               <div key={item.id} className="mb-4">
                 <TableProductCard
                   product={item}
-                  onEdit={() => {}}
-                  onDelete={() => {}}
+                  onEdit={() => onEdit(item)}
+                  onDelete={() => onDelete(item)}
                 />
               </div>
             ))}
