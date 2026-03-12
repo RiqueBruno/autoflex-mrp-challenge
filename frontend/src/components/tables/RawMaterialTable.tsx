@@ -1,5 +1,6 @@
 import type { IRawMaterialResponse } from "../../types/IRawMaterial";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Table, Trash2 } from "lucide-react";
+import { TableRawMaterialCard } from "../mobileCards/TableRawMaterialCard";
 
 interface RawMaterialTableProps {
   rawMaterials: IRawMaterialResponse[];
@@ -14,7 +15,7 @@ export const RawMaterialTable = ({
 }: RawMaterialTableProps) => {
   return (
     <div className="bg-surface-card border border-border-light rounded-lg shadow-sm overflow-x-auto">
-      <table className="w-full text-left border-collapse whitespace-nowrap">
+      <table className="w-full hidden md:table text-left border-collapse whitespace-nowrap">
         <thead className="bg-surface-bg border-b border-border-light text-text-main text-sm uppercase">
           <tr>
             <th className="py-3 px-6 font-semibold">ID</th>
@@ -60,6 +61,26 @@ export const RawMaterialTable = ({
           )}
         </tbody>
       </table>
+      <section className="p-4 md:hidden">
+        <h2 className="text-lg font-bold text-text-main mb-4 flex items-center gap-2">
+          <Table className="w-5 h-5" />
+          Raw Materials
+        </h2>
+        {rawMaterials.map((material) => (
+          <div key={material.id} className="mb-4">
+            <TableRawMaterialCard
+              rawMaterials={material}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          </div>
+        ))}
+        {rawMaterials.length === 0 && (
+          <div className="py-8 text-center text-text-muted">
+            No raw materials found.
+          </div>
+        )}
+      </section>
     </div>
   );
 };
