@@ -2,13 +2,13 @@ export interface IProductMaterialResponse {
   id: number;
   productId: number;
   productName: string;
-  materialId: number;
+  rawMaterialId: number;
   rawMaterialName: string;
   quantityNeeded: number;
 }
 
 export interface IProductMaterialRequest {
   productId: number;
-  materialId: number;
+  rawMaterialId: number;
   quantityNeeded: number;
 }
