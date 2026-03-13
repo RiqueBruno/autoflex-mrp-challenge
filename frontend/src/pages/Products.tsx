@@ -239,8 +239,6 @@ export const Products = () => {
   };
 
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
-  console.log(actualRecipeItem);
-
   return (
     <div className="flex flex-col gap-8">
       <header>
