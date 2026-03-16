@@ -11,7 +11,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "tb_product_material")
+@Table(
+    name = "tb_product_material",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"product_id", "raw_material_id"})
+    }
+)
 @Getter
 @Setter
 @NoArgsConstructor
