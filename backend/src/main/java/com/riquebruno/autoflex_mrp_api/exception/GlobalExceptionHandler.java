@@ -12,4 +12,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> noDuplications(DataIntegrityViolationException error) {
         return ResponseEntity.status(409).body("It is not possible to have duplicate names.");
     };
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> resourceNotFoundException (ResourceNotFoundException error) {
+        return ResponseEntity.status(404).body(error.getMessage());
+    }
 }
