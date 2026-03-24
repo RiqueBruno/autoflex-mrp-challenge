@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> noDuplications(DataIntegrityViolationException error) {
-        return ResponseEntity.status(409).body("It is not possible to have duplicate names.");
+        return ResponseEntity.status(409).body("Data conflict: This name is already in use or the item is linked to another record and cannot be deleted.");
     };
 
     @ExceptionHandler(ResourceNotFoundException.class)
