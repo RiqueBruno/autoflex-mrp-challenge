@@ -17,4 +17,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> resourceNotFoundException (ResourceNotFoundException error) {
         return ResponseEntity.status(404).body(error.getMessage());
     }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<String> businessRuleException (BusinessRuleException error) {
+        return ResponseEntity.status(400).body(error.getMessage());
+    }
 }
