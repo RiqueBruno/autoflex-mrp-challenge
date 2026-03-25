@@ -59,7 +59,7 @@ public class ProductService {
                 product.getName(),
                 product.getValue()
         );
-    };
+    }
 
     public ProductResponseDTO update(Long id, ProductRequestDTO product) {
             Product entity = repository.findById(id)

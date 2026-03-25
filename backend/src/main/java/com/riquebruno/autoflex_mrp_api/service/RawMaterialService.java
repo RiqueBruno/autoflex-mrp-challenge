@@ -3,6 +3,8 @@ package com.riquebruno.autoflex_mrp_api.service;
 import com.riquebruno.autoflex_mrp_api.dto.RawMaterialRequestDTO;
 import com.riquebruno.autoflex_mrp_api.dto.RawMaterialResponseDTO;
 import com.riquebruno.autoflex_mrp_api.entity.RawMaterial;
+import com.riquebruno.autoflex_mrp_api.exception.BusinessRuleException;
+import com.riquebruno.autoflex_mrp_api.exception.ResourceNotFoundException;
 import com.riquebruno.autoflex_mrp_api.repository.RawMaterialRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,13 @@ public class RawMaterialService {
     }
 
     public RawMaterialResponseDTO create(RawMaterialRequestDTO material) {
+        if(material.name() == null || material.name().isBlank()) {
+            throw new BusinessRuleException("The name is required.");
+        }
+        if(material.amount() == null || material.amount() < 0) {
+            throw new BusinessRuleException("The value must be greater than 0.");
+        }
+
         RawMaterial entity = new RawMaterial();
         entity.setName(material.name());
         entity.setAmount(material.amount());
@@ -33,18 +42,17 @@ public class RawMaterialService {
 
     public List<RawMaterialResponseDTO> findAll() {
         List<RawMaterial> materials = repository.findAll();
-        List<RawMaterialResponseDTO> response = materials.stream()
+        return materials.stream()
                 .map(material -> new RawMaterialResponseDTO(
                     material.getId(),
                     material.getName(),
                     material.getAmount()
         )).toList();
-        return response;
     }
 
     public RawMaterialResponseDTO findById(Long id) {
         RawMaterial entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
         return new RawMaterialResponseDTO(
                 entity.getId(),
                 entity.getName(),
@@ -54,7 +62,7 @@ public class RawMaterialService {
 
     public RawMaterialResponseDTO update(Long id, RawMaterialRequestDTO material) {
         RawMaterial entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Material not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found"));
 
         entity.setName(material.name());
         entity.setAmount(material.amount());
@@ -70,7 +78,7 @@ public class RawMaterialService {
 
     public void delete(Long id) {
         if(!repository.existsById(id)){
-            throw new RuntimeException("Material not found!");
+            throw new ResourceNotFoundException("Material not found!");
         }
         repository.deleteById(id);
     }
