@@ -5,6 +5,8 @@ import com.riquebruno.autoflex_mrp_api.dto.ProductMaterialResponseDTO;
 import com.riquebruno.autoflex_mrp_api.entity.Product;
 import com.riquebruno.autoflex_mrp_api.entity.ProductMaterial;
 import com.riquebruno.autoflex_mrp_api.entity.RawMaterial;
+import com.riquebruno.autoflex_mrp_api.exception.BusinessRuleException;
+import com.riquebruno.autoflex_mrp_api.exception.ResourceNotFoundException;
 import com.riquebruno.autoflex_mrp_api.repository.ProductMaterialRepository;
 import com.riquebruno.autoflex_mrp_api.repository.ProductRepository;
 import com.riquebruno.autoflex_mrp_api.repository.RawMaterialRepository;
@@ -31,9 +33,13 @@ public class ProductMaterialService {
 
     public ProductMaterialResponseDTO create(ProductMaterialRequestDTO request) {
         Product product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new RuntimeException("Product not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found!"));
         RawMaterial material = materialRepository.findById(request.rawMaterialId())
-                .orElseThrow(() -> new RuntimeException("Material not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Material not found!"));
+
+        if (request.quantityNeeded() == null || request.quantityNeeded() <= 0) {
+            throw new BusinessRuleException("The value of quantity must be greater than 0.");
+        }
 
         ProductMaterial entity = new ProductMaterial();
         entity.setProduct(product);
@@ -68,6 +74,9 @@ public class ProductMaterialService {
 
     public List<ProductMaterialResponseDTO> findByProductId(Long id) {
         List<ProductMaterial> materials = repository.findByProductId(id);
+        if (materials.isEmpty()) {
+            throw new ResourceNotFoundException("It's not possible to retrieve the product recipe, or it doesn't exist.");
+        }
         return materials.stream()
                 .map(material -> new ProductMaterialResponseDTO(
                         material.getId(),
@@ -81,7 +90,11 @@ public class ProductMaterialService {
 
     public ProductMaterialResponseDTO update(Long id, ProductMaterialRequestDTO request) {
         ProductMaterial entity = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Recipe item not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe item not found!"));
+
+        if (request.quantityNeeded() == null || request.quantityNeeded() <= 0) {
+            throw new BusinessRuleException("The value of quantity must be greater than 0.");
+        }
 
         entity.setQuantityNeeded(request.quantityNeeded());
 
@@ -99,7 +112,7 @@ public class ProductMaterialService {
 
     public void delete(Long id){
         if(!repository.existsById(id)) {
-            throw new RuntimeException("Recipe item not found!");
+            throw new ResourceNotFoundException("Recipe item not found!");
         }
         repository.deleteById(id);
     }
