@@ -238,6 +238,15 @@ export const Products = () => {
     setRecipeEditFormOpen(true);
   };
 
+  const newProductForm = () => {
+    setActualProduct({
+      id: 0,
+      name: "",
+      value: 0,
+    });
+    setOpenForm(true);
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -272,7 +281,7 @@ export const Products = () => {
             Product List
           </h2>
           <button
-            onClick={() => setOpenForm(true)}
+            onClick={newProductForm}
             className="bg-brand-darkBlue text-text-inverted px-4 py-2 rounded-md flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer"
           >
             <Plus className="w-4 h-4" /> New Product
