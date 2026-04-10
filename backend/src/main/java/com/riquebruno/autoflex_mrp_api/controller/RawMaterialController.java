@@ -3,6 +3,9 @@ package com.riquebruno.autoflex_mrp_api.controller;
 import com.riquebruno.autoflex_mrp_api.dto.RawMaterialRequestDTO;
 import com.riquebruno.autoflex_mrp_api.dto.RawMaterialResponseDTO;
 import com.riquebruno.autoflex_mrp_api.service.RawMaterialService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,16 @@ public class RawMaterialController {
     @GetMapping
     public ResponseEntity<List<RawMaterialResponseDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Page<RawMaterialResponseDTO>> findAllByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<RawMaterialResponseDTO> rawMaterials = service.findAllByPage(pageable);
+        return ResponseEntity.ok(rawMaterials);
     }
 
     @GetMapping("/{id}")

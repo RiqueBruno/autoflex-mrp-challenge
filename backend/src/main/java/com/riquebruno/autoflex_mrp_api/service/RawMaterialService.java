@@ -6,6 +6,8 @@ import com.riquebruno.autoflex_mrp_api.entity.RawMaterial;
 import com.riquebruno.autoflex_mrp_api.exception.BusinessRuleException;
 import com.riquebruno.autoflex_mrp_api.exception.ResourceNotFoundException;
 import com.riquebruno.autoflex_mrp_api.repository.RawMaterialRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +50,15 @@ public class RawMaterialService {
                     material.getName(),
                     material.getAmount()
         )).toList();
+    }
+
+    public Page<RawMaterialResponseDTO> findAllByPage(Pageable pageable) {
+        Page<RawMaterial> rawMaterials = repository.findAll(pageable);
+        return rawMaterials.map(rawMaterial -> new RawMaterialResponseDTO(
+                rawMaterial.getId(),
+                rawMaterial.getName(),
+                rawMaterial.getAmount()
+        ));
     }
 
     public RawMaterialResponseDTO findById(Long id) {
