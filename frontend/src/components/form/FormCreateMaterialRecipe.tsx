@@ -39,6 +39,10 @@ export const FormCreateMaterialRecipe = (props: FormProps) => {
     (m) => m.rawMaterialId === formData.rawMaterialId,
   );
 
+  const hasMaterialSelected = formData.rawMaterialId !== 0;
+  const isQuantityValid = formData.quantityNeeded > 0;
+  const isFormValid = hasMaterialSelected && isQuantityValid;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="relative flex flex-col gap-1 mb-4">
@@ -58,6 +62,9 @@ export const FormCreateMaterialRecipe = (props: FormProps) => {
             className={`w-4 h-4 transition-transform ${isOpen ? "rotate-180" : ""}`}
           />
         </button>
+        {!hasMaterialSelected && (
+          <p className="text-sm text-red-500 mt-1">Please select a material.</p>
+        )}
 
         {isOpen && (
           <ul
@@ -104,9 +111,19 @@ export const FormCreateMaterialRecipe = (props: FormProps) => {
             })
           }
         />
+        {!isQuantityValid && (
+          <p className="text-sm text-red-500 mt-1">
+            Quantity must be greater than zero.
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-2">
-        <Button variant="primary" type="submit">
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!isFormValid}
+          className="cursor-pointer"
+        >
           Save
         </Button>
         <Button
