@@ -14,7 +14,7 @@ export const FormMaterialRecipe = (props: FormProps) => {
     props.initialData || {
       id: 0,
       productId: 0,
-      materialId: 0,
+      rawMaterialId: 0,
       quantityNeeded: 0,
       rawMaterialName: "",
       productName: "",
