@@ -6,6 +6,8 @@ import com.riquebruno.autoflex_mrp_api.entity.Product;
 import com.riquebruno.autoflex_mrp_api.exception.BusinessRuleException;
 import com.riquebruno.autoflex_mrp_api.exception.ResourceNotFoundException;
 import com.riquebruno.autoflex_mrp_api.repository.ProductRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,6 +51,16 @@ public class ProductService {
                         product.getValue()
                 )
         ).toList();
+    }
+
+    public Page<ProductResponseDTO> findAllByPage(Pageable pageable) {
+        Page<Product> products = repository.findAll(pageable);
+        return products.map(product -> new ProductResponseDTO(
+                                product.getId(),
+                                product.getName(),
+                                product.getValue()
+                        )
+                );
     }
 
     public ProductResponseDTO findById(Long id) {

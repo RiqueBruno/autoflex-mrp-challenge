@@ -3,6 +3,9 @@ package com.riquebruno.autoflex_mrp_api.controller;
 import com.riquebruno.autoflex_mrp_api.dto.ProductRequestDTO;
 import com.riquebruno.autoflex_mrp_api.dto.ProductResponseDTO;
 import com.riquebruno.autoflex_mrp_api.service.ProductService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,16 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponseDTO>> findAll() {
         return ResponseEntity.ok(service.findAll());
+    }
+
+    @GetMapping("/pages")
+    public ResponseEntity<Page<ProductResponseDTO>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pegeable = PageRequest.of(page, size);
+        Page<ProductResponseDTO> products = service.findAllByPage(pegeable);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
