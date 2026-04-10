@@ -35,6 +35,7 @@ export const FormMaterialRecipe = (props: FormProps) => {
           onChange={(e) =>
             setFormData({ ...formData, rawMaterialName: e.target.value })
           }
+          disabled={true}
         />
       </div>
       <div>
