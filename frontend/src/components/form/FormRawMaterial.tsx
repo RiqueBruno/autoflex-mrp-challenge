@@ -19,6 +19,10 @@ export const FormRawMaterial = (props: FormProps) => {
     props.onSubmit(formData);
   };
 
+  const haveName = formData.name.length > 0;
+  const haveAmount = formData.amount > 0;
+  const isFormValid = haveName && haveAmount;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -27,6 +31,7 @@ export const FormRawMaterial = (props: FormProps) => {
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         />
+        {!haveName && <p className="text-red-500 text-sm">Name is required.</p>}
       </div>
       <div>
         <Input
@@ -39,15 +44,24 @@ export const FormRawMaterial = (props: FormProps) => {
             })
           }
         />
+        {!haveAmount && (
+          <p className="text-red-500 text-sm">Amount must be greater than 0.</p>
+        )}
       </div>
       <div className="flex flex-col gap-2">
-        <Button variant="primary" type="submit">
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!isFormValid}
+          className="cursor-pointer"
+        >
           Save
         </Button>
         <Button
           variant="secondary"
           type="button"
           onClick={() => props.onClose(false)}
+          className="cursor-pointer"
         >
           Cancel
         </Button>
