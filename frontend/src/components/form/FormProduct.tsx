@@ -18,6 +18,9 @@ export const FormProduct = (props: FormProps) => {
     e.preventDefault();
     props.onSubmit(formData);
   };
+  const haveName = formData.name.length > 0;
+  const haveValue = formData.value > 0;
+  const isFormValid = haveName && haveValue;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -27,6 +30,7 @@ export const FormProduct = (props: FormProps) => {
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
         />
+        {!haveName && <p className="text-red-500 text-sm">Name is required.</p>}
       </div>
       <div>
         <Input
@@ -36,15 +40,24 @@ export const FormProduct = (props: FormProps) => {
             setFormData({ ...formData, value: parseFloat(e.target.value) || 0 })
           }
         />
+        {!haveValue && (
+          <p className="text-red-500 text-sm">Value must be greater than 0.</p>
+        )}
       </div>
       <div className="flex flex-col gap-2">
-        <Button variant="primary" type="submit">
+        <Button
+          variant="primary"
+          type="submit"
+          disabled={!isFormValid}
+          className="cursor-pointer"
+        >
           Save
         </Button>
         <Button
           variant="secondary"
           type="button"
           onClick={() => props.onClose(false)}
+          className="cursor-pointer"
         >
           Cancel
         </Button>
