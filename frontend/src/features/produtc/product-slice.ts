@@ -6,12 +6,18 @@ interface InitState {
   product: IProductResponse[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  totalPages: number;
+  currentPage: number;
+  totalElements: number;
 }
 
 const initialState: InitState = {
   product: [],
   status: "idle",
   error: null,
+  totalPages: 0,
+  currentPage: 0,
+  totalElements: 0,
 };
 
 // THUNKS
@@ -19,6 +25,13 @@ const initialState: InitState = {
 export const fetchProducts = createAsyncThunk("product/fetchAll", async () => {
   return await api.products.getAll();
 });
+
+export const fetchProductsByPage = createAsyncThunk(
+  "product/fetchByPage",
+  async ({ page, size }: { page: number; size: number }) => {
+    return await api.products.getAllByPage(page, size);
+  },
+);
 
 export const createProduct = createAsyncThunk(
   "product/create",
@@ -79,6 +92,23 @@ export const productSlice = createSlice({
         state.product = state.product.filter(
           (item) => item.id !== action.payload,
         );
+      })
+      .addCase(fetchProductsByPage.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchProductsByPage.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.product = action.payload.content;
+
+        state.totalPages = action.payload.totalPages;
+        state.currentPage = action.payload.number;
+        state.totalElements = action.payload.totalElements;
+      })
+      .addCase(fetchProductsByPage.rejected, (state, action) => {
+        state.status = "failed";
+        state.error =
+          action.error.message || "Failed to fetch paginated products.";
       });
   },
 });

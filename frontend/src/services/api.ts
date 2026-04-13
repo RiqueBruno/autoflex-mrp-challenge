@@ -8,6 +8,7 @@ import type {
   IProductMaterialResponse,
 } from "../types/IProductMaterial";
 import type { IProductionResponse } from "../types/IProduction";
+import type { IProductPage } from "../types/IProductPage";
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8080";
@@ -60,6 +61,16 @@ const rawMaterials = {
 const products = {
   getAll: async (): Promise<IProductResponse[]> => {
     const response = await fetch(`${API_BASE_URL}/products`);
+    if (!response.ok) throw new Error("Products not found");
+    return response.json();
+  },
+  getAllByPage: async (
+    page: number = 0,
+    size: number = 10,
+  ): Promise<IProductPage> => {
+    const response = await fetch(
+      `${API_BASE_URL}/products?page=${page}&size=${size}`,
+    );
     if (!response.ok) throw new Error("Products not found");
     return response.json();
   },
