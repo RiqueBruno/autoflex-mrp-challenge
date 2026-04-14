@@ -69,7 +69,7 @@ const products = {
     size: number = 10,
   ): Promise<IProductPage> => {
     const response = await fetch(
-      `${API_BASE_URL}/products?page=${page}&size=${size}`,
+      `${API_BASE_URL}/products/pages?page=${page}&size=${size}`,
     );
     if (!response.ok) throw new Error("Products not found");
     return response.json();

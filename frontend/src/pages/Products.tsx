@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { VerticalChart } from "../components/chart/VerticalChart";
-import { Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../hooks/useAppSelector";
 import { ProductTable } from "../components/tables/ProductTable";
 import {
   createProduct,
   deleteProduct,
   fetchProducts,
+  fetchProductsByPage,
   updateProduct,
 } from "../features/produtc/product-slice";
 import { FormProduct } from "../components/form/FormProduct";
@@ -46,7 +47,8 @@ export const Products = () => {
   const [actutalRecipe, setActualRecipe] = useState<IProductMaterialResponse[]>(
     [],
   );
-  const { product } = useAppSelector((state) => state.product);
+  const { product, productsByPage, totalPages, currentPage, totalElements } =
+    useAppSelector((state) => state.product);
   const { productMaterial, productMaterialList } = useAppSelector(
     (state) => state.productMaterial,
   );
@@ -57,6 +59,7 @@ export const Products = () => {
       try {
         await dispatch(fetchProducts());
         await dispatch(fetchProductsMaterials());
+        await dispatch(fetchProductsByPage({ page: 0, size: 10 }));
       } catch (error) {
         console.error("Error fetching products: ", error);
       }
@@ -247,6 +250,12 @@ export const Products = () => {
     setOpenForm(true);
   };
 
+  const handlePageChange = (page: number) => {
+    if (page >= 0 && page < totalPages) {
+      dispatch(fetchProductsByPage({ page, size: 10 }));
+    }
+  };
+
   const sortedMaterials = [...product].sort((a, b) => b.value - a.value);
   return (
     <div className="flex flex-col gap-8">
@@ -287,12 +296,48 @@ export const Products = () => {
             <Plus className="w-4 h-4" /> New Product
           </button>
         </header>
-        <ProductTable
-          products={product}
-          onEdit={editProductHandler}
-          onDelete={deleteProductHandler}
-          onRecipeClick={recipeClickHandler}
-        />
+        <div>
+          <ProductTable
+            products={productsByPage}
+            onEdit={editProductHandler}
+            onDelete={deleteProductHandler}
+            onRecipeClick={recipeClickHandler}
+          />
+          {totalPages > 1 && (
+            <div className="flex gap-2 mt-4 w-full justify-center align-middle">
+              <button
+                aria-label="Previous content"
+                disabled={currentPage === 0}
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="bg-gray-300 cursor-pointer text-gray-700 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed px-3 py-1 rounded"
+              >
+                <ChevronLeft />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => handlePageChange(index)}
+                  className={`${
+                    currentPage === index
+                      ? "text-brand-blue font-bold"
+                      : "text-gray-700/50 hover:text-brand-darkBlue hover:underline cursor-pointer"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+
+              <button
+                disabled={currentPage === totalPages - 1}
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="bg-gray-300 cursor-pointer text-gray-700 hover:bg-gray-400 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed px-3 py-1 rounded"
+              >
+                <ChevronRight />
+              </button>
+            </div>
+          )}
+        </div>
         {openForm && (
           <BaseModal title="Add New Product" onClose={() => setOpenForm(false)}>
             <FormProduct onSubmit={saveProductHandler} onClose={setOpenForm} />

@@ -4,6 +4,7 @@ import type { IProductResponse, IProductRequest } from "../../types/IProduct";
 
 interface InitState {
   product: IProductResponse[];
+  productsByPage: IProductResponse[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   totalPages: number;
@@ -13,6 +14,7 @@ interface InitState {
 
 const initialState: InitState = {
   product: [],
+  productsByPage: [],
   status: "idle",
   error: null,
   totalPages: 0,
@@ -99,7 +101,7 @@ export const productSlice = createSlice({
       })
       .addCase(fetchProductsByPage.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.product = action.payload.content;
+        state.productsByPage = action.payload.content;
 
         state.totalPages = action.payload.totalPages;
         state.currentPage = action.payload.number;
