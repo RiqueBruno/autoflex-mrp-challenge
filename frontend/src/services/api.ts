@@ -20,6 +20,17 @@ const rawMaterials = {
     return response.json();
   },
 
+  getAllByPage: async (
+    page: number = 0,
+    size: number = 10,
+  ): Promise<IProductPage> => {
+    const response = await fetch(
+      `${API_BASE_URL}/raw-material/pages?page=${page}&size=${size}`,
+    );
+    if (!response.ok) throw new Error("Raw materials not found");
+    return response.json();
+  },
+
   getById: async (id: number): Promise<IRawMaterialResponse> => {
     const response = await fetch(`${API_BASE_URL}/raw-material/${id}`);
     if (!response.ok) throw new Error("Raw material not found");
