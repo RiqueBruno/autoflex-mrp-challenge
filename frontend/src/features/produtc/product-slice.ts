@@ -101,7 +101,7 @@ export const productSlice = createSlice({
       })
       .addCase(fetchProductsByPage.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.productsByPage = action.payload.content;
+        state.productsByPage = action.payload.content as IProductResponse[];
 
         state.totalPages = action.payload.totalPages;
         state.currentPage = action.payload.number;
