@@ -7,6 +7,7 @@ import type {
 
 interface InitState {
   rawMaterial: IRawMaterialResponse[];
+  rawMaterialsByPage: IRawMaterialResponse[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
   totalPages: number;
@@ -16,6 +17,7 @@ interface InitState {
 
 const initialState: InitState = {
   rawMaterial: [],
+  rawMaterialsByPage: [],
   status: "idle",
   error: null,
   totalPages: 0,
