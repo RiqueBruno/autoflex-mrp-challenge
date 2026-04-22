@@ -9,12 +9,18 @@ interface InitState {
   rawMaterial: IRawMaterialResponse[];
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
+  totalPages: number;
+  currentPage: number;
+  totalElements: number;
 }
 
 const initialState: InitState = {
   rawMaterial: [],
   status: "idle",
   error: null,
+  totalPages: 0,
+  currentPage: 0,
+  totalElements: 0,
 };
 
 // THUNKS
@@ -23,6 +29,13 @@ export const fetchRawMaterials = createAsyncThunk(
   "rawMaterial/fetchAll",
   async () => {
     return await api.rawMaterials.getAll();
+  },
+);
+
+export const fetchRawMaterialsByPage = createAsyncThunk(
+  "rawMaterial/fetchByPage",
+  async ({ page, size }: { page: number; size: number }) => {
+    return await api.rawMaterials.getAllByPage(page, size);
   },
 );
 
@@ -85,6 +98,23 @@ export const rawMaterialSlice = createSlice({
         state.rawMaterial = state.rawMaterial.filter(
           (item) => item.id !== action.payload,
         );
+      })
+      .addCase(fetchRawMaterialsByPage.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(fetchRawMaterialsByPage.rejected, (state, action) => {
+        state.status = "failed";
+        state.error =
+          action.error.message || "Failed to fetch raw materials by page.";
+      })
+      .addCase(fetchRawMaterialsByPage.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.rawMaterial = action.payload.content as IRawMaterialResponse[];
+
+        state.totalPages = action.payload.totalPages;
+        state.currentPage = action.payload.number;
+        state.totalElements = action.payload.totalElements;
       });
   },
 });
