@@ -1,7 +1,8 @@
 import type { IProductResponse } from "./IProduct";
+import type { IRawMaterialResponse } from "./IRawMaterial";
 
 export interface IProductPage {
-  content: IProductResponse[];
+  content: IProductResponse[] | IRawMaterialResponse[];
   empty: boolean;
   first: boolean;
   last: boolean;
